@@ -1,37 +1,61 @@
-(ns clojure-workshop.parenthmazes)
+;; 1
+(def weapon-damage {:fists 10.0 :staff 35.0 :sword 100.0 :cast-iron-saucepan 150.0})
 
-(defn welcome-multiplayer
-  [friends]
-  (when (seq friends)          ;; returns nil when the collection passed as a parameter is empty
-    (let [nb-friends (count friends)]
-      (println (str "Sending " nb-friends " fiend request" (when (> nb-friends 1) (str "s")) " to the following players: "
-                    (clojure.string/join ", " friends))))))
-
-(defn welcome
-  ([player] (println (str "Welcome to Parenthmazes (single-player mode), " player "!")))
-  ([player & friends]
-   (println (str "Welcome to Parenthmazes (multiplayer mode, " player "!"))
-   (welcome-multiplayer friends)))
-
-(welcome "Jon" "Arya" "Tyrion" "Petyr")
-(welcome "Jaqen")
-
-(welcome "Jaqen" nil)
-
-(def weapon-damage {:fist 10.0 :staff 35.0 :sword 100.0 :cast-iron-saucepan 150.0})
-
+;; 2
 (defn strike
-  [target weapon]
-  (let [points (weapon weapon-damage)]
-    (if (= :gnomes (:camp target))
-      (update target :health + points)
-      (update target :health - points))))
+  ([target weapon]
+   (let [points (weapon weapon-damage)]
+     (if (= :gnomes (:camp target))
+       (update target :health + points)
+       (update target :health - points)))))
 
-(def enemy
-  {:name "Zulkaz" :health 250 :camp :trolls})
+;; 3
+(def enemy {:name "Zulkaz", :health 250, :armor 0.8, :camp :trolls})
+(strike enemy :sword)
 
-(def ally
-  {:name "Carla" :health 80 :camp :gnomes})
 
-(strike enemy :sword)                                       ;; will damage the target
-(strike ally :staff)                                        ;; will heal the target
+;; 4
+(def ally {:name "Carla", :health 80, :camp :gnomes})
+(strike ally :staff)
+
+
+;; 5
+(defn strike
+  ([target weapon]
+   (let [points (weapon weapon-damage)]
+     (if (= :gnomes (:camp target))
+       (update target :health + points)
+       (let [armor (or (:armor target) 0)
+             damage (* points (- 1 armor))]
+         (update target :health - damage))))))
+
+
+;; 8
+(defn strike
+  ([{:keys [camp armor] :as target} weapon]
+   (let [points (weapon weapon-damage)]
+     (if (= :gnomes camp)
+       (update target :health + points)
+       (let [armor-effect (or (:armor target) 0)
+             damage (* points (- 1 armor-effect))]
+         (update target :health - damage))))))
+
+
+
+;; 9
+(defn strike
+  "With one argument, strike a target with a default :fists `weapon`. With two argument, strike a target with `weapon`.
+   Strike will heal a target that belongs to the gnomes camp."
+  ([target] (strike target :fists))
+  ;; :as bind the destructured map to a symbol, here target
+  ;; :or permits us to provide a default value for when a key that we want to extract isn't found (instead of bind to nil)
+  ([{:keys [camp armor], :or {camp :gnomes armor 0}, :as target} weapon]
+   (let [points (weapon weapon-damage)]
+     (if (= :gnomes camp)
+       (update target :health + points)
+       (let [damage (* points (- 1 armor))]
+         (update target :health - damage))))))
+
+(def enemy {:name "Zulkaz", :health 250, :armor 0.8, :camp :trolls})
+(strike enemy)
+(strike enemy :sword)
