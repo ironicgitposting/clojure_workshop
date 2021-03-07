@@ -94,3 +94,30 @@
   (hexify (.getBytes s)))
 
 ((comp clojure.string/upper-case unhexify-str hexify-str) "Patrick")
+
+(def marketing-adder
+  (partial + 0.99))
+
+(def format-price
+  (partial str "€"))
+;;
+(def checkout
+  (comp (partial str "Only ") format-price marketing-adder))
+
+(checkout 10 5 15 6 9 )
+
+;; Short hand syntax
+(fn [s] (str "Hello " s))
+
+;;Is the same as:
+#(str "Hello " %)
+
+;; and
+(fn [x y]
+  (* (+ x 10) (+y 20)))
+
+;; Is the same as
+#(* (+ %1 10) (+ %2 20))
+
+;; Usage example
+(#(str %1 " " %2 " " %3) "First" "Second" "Third")
