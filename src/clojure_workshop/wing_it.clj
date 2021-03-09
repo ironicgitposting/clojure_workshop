@@ -3,20 +3,20 @@
 
 (def sample-itinary {
                      ;Nantes
-                     :from {
-                            :lat 47.21
-                            :lon  -1.55
-                            }
+                     :from     {
+                                :lat 47.21
+                                :lon -1.55
+                                }
                      ; Paris
-                     :to {
-                          :lat 48.86
-                          :lon 2.334
-                          }
+                     :to       {
+                                :lat 48.86
+                                :lon 2.334
+                                }
                      ; In euros
-                     :cost 45
+                     :cost     45
                      ; In hours
                      :duration :driving
-                     :vehicle :toyota
+                     :vehicle  :toyota
                      })
 
 
@@ -33,7 +33,7 @@
         lat-2 (:lat to-coords)
         lon-2 (:lon to-coords)]
     (* 110.25
-       (math/sqrt (math/abs (+  (delta lat-1 lat-2) (* (Math/cos lat-1) (delta lon-1 lon-2))))))))
+       (math/sqrt (math/abs (+ (delta lat-1 lat-2) (* (Math/cos lat-1) (delta lon-1 lon-2))))))))
 
 (compute-euclidian-distance (:from sample-itinary) (:to sample-itinary))
 
