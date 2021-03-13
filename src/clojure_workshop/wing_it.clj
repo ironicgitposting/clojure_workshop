@@ -78,9 +78,7 @@
 
 (defmethod itinary :driving
   [m]
-  (let [from (:from m)
-        to (:to m)
-        distance (compute-euclidean-distance from to)
+  (let [distance (compute-euclidean-distance (:from m) (:to m))
         duration (with-precision 2 (/ distance average-driving-speed))
         cost (cost-by-type-of-car {:distance distance :vehicle (:vehicle m)})]
     {:cost cost :distance distance  :duration duration}))
